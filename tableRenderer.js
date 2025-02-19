@@ -108,7 +108,7 @@ function renderTableRows(sortedData, totalRow, sortedColumnIndex, sortDirection,
   sortedData.forEach(row => {
     const tr = document.createElement('tr');
     tr.classList.add(
-      'bg-white', 'border-b', 'dark:bg-gray-800', 'dark:border-gray-700',
+      'bg-white', 'border-b', 'dark:bg-gray-800', 'dark:border-gray-600',
       'hover:bg-gray-50', 'dark:hover:bg-gray-600',
       'h-[60px]'  // Fixed height to prevent shifting
     );
@@ -120,7 +120,7 @@ function renderTableRows(sortedData, totalRow, sortedColumnIndex, sortDirection,
           <input
             type="number"
             placeholder="0"
-            class="bg-gray-100 dark:bg-gray-700 w-16 px-2 py-1 rounded text-center"
+            class="bg-gray-100 dark:bg-gray-600 w-16 px-2 py-1 rounded text-center"
             data-index="${row.index}"
           >
           <span class="inline-flex items-center relative">
