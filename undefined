@@ -1,0 +1,83 @@
+tr.innerHTML = `
+  <td class="px-6 py-4 w-1/3">${row.setName}</td>
+  <td class="px-6 py-4 w-1/3 text-center">${row.packCount}</td>
+  <td class="px-6 py-4 w-1/3 flex items-center justify-center space-x-2 h-full relative">
+    <input
+      type="number"
+      value="0"
+      class="bg-gray-100 dark:bg-gray-700 w-16 px-2 py-1 rounded text-center"
+      data-index="${row.index}"
+    >
+    <span class="inline-flex items-center relative">
+      <button
+        class="add-btn bg-blue-500 dark:bg-blue-700 text-white px-2 py-1 rounded w-20 text-center relative flex justify-center items-center space-x-1"
+        data-index="${row.index}"
+      >
+        <span>Add</span>
+      </button>
+      <svg class="checkmark hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: white;">
+        <path d="M22 4L9.5 17L2 10.5" />
+      </svg>
+    </span>
+  </td>
+`;
+
+const input = tr.querySelector('input');
+const addBtn = tr.querySelector('.add-btn');
+const packCountCell = tr.querySelector('td:nth-child(2)');
+const checkmark = tr.querySelector('.checkmark'); 
+
+addBtn.addEventListener('click', async () => {
+  const incrementValue = parseInt(input.value) || 0;
+  if (incrementValue !== 0) {
+    try {
+      showLoading();
+      const newPackCount = row.packCount + incrementValue;
+
+      // Prevent pack count from going negative
+      if (newPackCount < 0) {
+        console.warn('Pack count cannot be negative');
+        return;
+      }
+
+      const result = await updateValue(row.index, newPackCount);
+
+      if (result.result === 'success') {
+        // Update the displayed pack count for the current row
+        packCountCell.textContent = newPackCount;
+
+        // Update row's pack count in the data
+        row.packCount = newPackCount;
+
+        // Update the total row
+        const totalPackCell = document.querySelector('#tableBody tr:last-child td:nth-child(2)');
+        const currentTotal = parseInt(totalPackCell.textContent);
+        const newTotal = currentTotal + incrementValue;
+        totalPackCell.textContent = newTotal;
+
+        // Update total row in the original data
+        totalRow.packCount = newTotal;
+
+        // Reset input
+        input.value = '0';
+
+        // Show checkmark briefly
+        checkmark.classList.remove('hidden');
+        setTimeout(() => {
+          checkmark.classList.add('hidden');
+        }, 2000);
+
+
+        // Show confetti on success
+        showConfetti();
+      }
+    } catch (error) {
+      console.error('Update failed:', error);
+      alert('Failed to update pack count. Please try again.');
+    } finally {
+      hideLoading();
+    }
+  }
+});
+
+tableBody.appendChild(tr);
