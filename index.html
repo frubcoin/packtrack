@@ -190,6 +190,30 @@
     .hidden-column {
       display: none;
     }
+
+    /* Media query for mobile devices - adjust as needed */
+    @media (max-width: 768px) {
+      #dataTable td.px-6, #dataTable th.px-6 {
+        padding-left: 0.75rem; /* Reduced padding for smaller screens */
+        padding-right: 0.75rem;
+      }
+      #dataTable input[type="number"] {
+        width: 3rem; /* Further reduced input width on mobile */
+        font-size: 0.875rem; /* Slightly smaller font size */
+      }
+      #dataTable .add-btn {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        font-size: 0.875rem;
+        width: auto; /* Allow button width to adjust to content */
+      }
+      #dataTable td:nth-child(3) { /* Actions column on mobile */
+        width: auto; /* Adjust width as needed for mobile */
+        min-width: 120px; /* Minimum width to prevent squishing */
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
@@ -205,11 +229,11 @@
       <div class="space-x-2 flex items-center">
         <button id="exportImage" class="">
           <svg class="h-6 w-6 align-middle export-button-svg" viewBox="0 0 407.096 407.096" xmlns="http://www.w3.org/2000/svg">
-<path d="M402.115,84.008L323.088,4.981C319.899,1.792,315.574,0,311.063,0H17.005C7.613,0,0,7.614,0,17.005v373.086
-			c0,9.392,7.613,17.005,17.005,17.005h373.086c9.392,0,17.005-7.613,17.005-17.005V96.032
-			C407.096,91.523,405.305,87.197,402.115,84.008z M300.664,163.567H67.129V38.862h233.535V163.567z"/>
-		<path d="M214.051,148.16h43.08c3.131,0,5.668-2.538,5.668-5.669V59.584c0-3.13-2.537-5.668-5.668-5.668h-43.08
-			c-3.131,0-5.668,2.538-5.668,5.668v82.907C208.383,145.622,210.92,148.16,214.051,148.16z"/>
+            <path d="M402.115,84.008L323.088,4.981C319.899,1.792,315.574,0,311.063,0H17.005C7.613,0,0,7.614,0,17.005v373.086
+              c0,9.392,7.613,17.005,17.005,17.005h373.086c9.392,0,17.005-7.613,17.005-17.005V96.032
+              C407.096,91.523,405.305,87.197,402.115,84.008z M300.664,163.567H67.129V38.862h233.535V163.567z"/>
+            <path d="M214.051,148.16h43.08c3.131,0,5.668-2.538,5.668-5.669V59.584c0-3.13-2.537-5.668-5.668-5.668h-43.08
+              c-3.131,0-5.668,2.538-5.668,5.668v82.907C208.383,145.622,210.92,148.16,214.051,148.16z"/>
           </svg>
         </button>
         <label class="ui-switch">
