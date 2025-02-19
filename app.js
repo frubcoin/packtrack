@@ -23,7 +23,7 @@ function hideLoading() {
 
 async function init() {
   try {
-    showLoading();
+    showLoading(); // Show loading immediately on init
     tableData = await fetchData(); // Fetch and store data
     setTableDataForSorting(tableData); // Set table data for sorting
     renderTable(tableData, actionsUnlocked); // Initial render with actions locked
@@ -36,7 +36,7 @@ async function init() {
     // Optionally show an error message to the user
     alert('Failed to load data. Please try again later.');
   } finally {
-    hideLoading();
+    hideLoading(); // Hide loading after init completes (or fails)
   }
 }
 
