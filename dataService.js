@@ -3,11 +3,30 @@ const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRzhT3A
 export async function fetchData() {
   try {
     const response = await fetch(SPREADSHEET_URL);
+    
+    // Add status code checking
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const csvText = await response.text();
+    
+    // Validate that we received actual CSV data
+    if (!csvText || csvText.trim() === '') {
+      throw new Error('Received empty response from spreadsheet');
+    }
+
+    // Add basic CSV validation
+    const lines = csvText.split('\n');
+    if (lines.length < 2) { // At least header + one data row
+      throw new Error('Invalid CSV data - insufficient rows');
+    }
+
     return parseCSV(csvText);
   } catch (error) {
     console.error('Error fetching data:', error);
-    throw error;
+    console.error('Spreadsheet URL:', SPREADSHEET_URL);
+    throw new Error(`Failed to fetch data: ${error.message}`);
   }
 }
 
