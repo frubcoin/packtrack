@@ -187,6 +187,18 @@ function renderTableRows(sortedData, totalRow, sortedColumnIndex, sortDirection,
               // Update total row in the original data
               totalRow.packCount = newTotal;
 
+              // Update the timestamp display
+              const lastUpdatedDiv = document.getElementById('lastUpdated');
+              const timestamp = new Date().toLocaleString('en-US', {
+                month: '2-digit',
+                day: '2-digit',
+                year: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+              });
+              lastUpdatedDiv.textContent = `Last updated: ${timestamp}`;
+
               // Reset input
               input.value = '0';
 
