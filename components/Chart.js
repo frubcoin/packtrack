@@ -17,18 +17,6 @@ useEffect(() => {
   loadData();
 }, []);
 
-const handleUpdate = async (index, value) => {
-  try {
-    const result = await updateValue(index, value);
-    if (result.result === 'success') {
-      setLastUpdate(result.timestamp);
-      // ... rest of your update handling code ...
-    }
-  } catch (error) {
-    console.error('Error updating:', error);
-  }
-};
-
 return (
   <div>
     {/* Your existing chart component */}
