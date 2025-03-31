@@ -23,26 +23,20 @@ function hideLoading() {
 
 async function init() {
   try {
-    showLoading();
-    tableData = await fetchData();
-    
-    if (!tableData || !Array.isArray(tableData) || tableData.length === 0) {
-      throw new Error('Invalid or empty data received');
-    }
-    
-    setTableDataForSorting(tableData);
-    renderTable(tableData, actionsUnlocked);
+    showLoading(); // Show loading immediately on init
+    tableData = await fetchData(); // Fetch and store data
+    setTableDataForSorting(tableData); // Set table data for sorting
+    renderTable(tableData, actionsUnlocked); // Initial render with actions locked
     setupThemeToggle();
     setupExportButton();
-    setupPinLock();
-    updateCostCalculator();
+    setupPinLock(); // Setup pin lock functionality
+    updateCostCalculator(); // Calculate and display initial cost
   } catch (error) {
     console.error('Initialization error:', error);
-    // More descriptive error message for users
-    const errorMessage = `Failed to load data: ${error.message}\n\nPlease check your internet connection and try refreshing the page. If the problem persists, contact the administrator.`;
-    alert(errorMessage);
+    // Optionally show an error message to the user
+    alert('Failed to load data. Please try again later.');
   } finally {
-    hideLoading();
+    hideLoading(); // Hide loading after init completes (or fails)
   }
 }
 
