@@ -14,9 +14,9 @@ export function renderTable(data, actionsUnlocked) {
     return; // Data might be null during re-render after unlocking actions
   }
 
-  // Separate the total row
-  const sortedData = [...data.slice(0, -1)];
-  const totalRow = data[data.length - 1];
+  // Separate the total row - update to access data.data
+  const sortedData = [...data.data.slice(0, -1)];
+  const totalRow = data.data[data.data.length - 1];
 
   // Default sorting by pack count (descending)
   if (currentSortColumn === null) {
