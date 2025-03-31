@@ -55,11 +55,5 @@ function parseCSV(csv) {
     };
   }).filter(row => row.setName.trim() !== '');
 
-  // Add current timestamp when data is fetched
-  const currentTimestamp = new Date().toISOString();
-
-  return {
-    data: parsedData,
-    lastUpdate: currentTimestamp
-  };
+  return parsedData;
 }
