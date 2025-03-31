@@ -32,7 +32,11 @@ export async function updateValue(index, value) {
     const result = await response.json();
 
     if (result.result === 'success') {
-      return { result: 'success' };
+      // Update was successful, return current timestamp with success
+      return { 
+        result: 'success',
+        timestamp: new Date().toISOString()
+      };
     } else {
       throw new Error('Update failed');
     }
@@ -55,5 +59,7 @@ function parseCSV(csv) {
     };
   }).filter(row => row.setName.trim() !== '');
 
-  return parsedData;
+  return {
+    data: parsedData
+  };
 }
