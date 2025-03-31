@@ -2,30 +2,40 @@ const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRzhT3A
 
 export async function fetchData() {
   try {
+    console.log('Attempting to fetch data from:', SPREADSHEET_URL);
     const response = await fetch(SPREADSHEET_URL);
     
-    // Add status code checking
+    // Add detailed status code checking
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.error('Response status:', response.status);
+      console.error('Response status text:', response.statusText);
+      throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
     }
     
     const csvText = await response.text();
+    console.log('Received data length:', csvText.length);
     
     // Validate that we received actual CSV data
     if (!csvText || csvText.trim() === '') {
       throw new Error('Received empty response from spreadsheet');
     }
 
-    // Add basic CSV validation
+    // Add basic CSV validation with logging
     const lines = csvText.split('\n');
-    if (lines.length < 2) { // At least header + one data row
+    console.log('Number of CSV lines:', lines.length);
+    if (lines.length < 2) {
       throw new Error('Invalid CSV data - insufficient rows');
     }
 
-    return parseCSV(csvText);
+    const parsedData = parseCSV(csvText);
+    console.log('Successfully parsed data rows:', parsedData.length);
+    return parsedData;
   } catch (error) {
-    console.error('Error fetching data:', error);
-    console.error('Spreadsheet URL:', SPREADSHEET_URL);
+    console.error('Detailed fetch error:', {
+      message: error.message,
+      stack: error.stack,
+      url: SPREADSHEET_URL
+    });
     throw new Error(`Failed to fetch data: ${error.message}`);
   }
 }

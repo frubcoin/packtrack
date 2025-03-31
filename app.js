@@ -23,8 +23,17 @@ function hideLoading() {
 
 async function init() {
   try {
+    console.log('Starting initialization...');
     showLoading();
+    
+    console.log('Fetching data...');
     tableData = await fetchData();
+    
+    console.log('Received table data:', {
+      isArray: Array.isArray(tableData),
+      length: tableData?.length,
+      sample: tableData?.[0]
+    });
     
     if (!tableData || !Array.isArray(tableData) || tableData.length === 0) {
       throw new Error('Invalid or empty data received');
@@ -36,10 +45,23 @@ async function init() {
     setupExportButton();
     setupPinLock();
     updateCostCalculator();
+    console.log('Initialization completed successfully');
   } catch (error) {
-    console.error('Initialization error:', error);
+    console.error('Detailed initialization error:', {
+      message: error.message,
+      stack: error.stack,
+      tableData: tableData
+    });
+    
     // More descriptive error message for users
-    const errorMessage = `Failed to load data: ${error.message}\n\nPlease check your internet connection and try refreshing the page. If the problem persists, contact the administrator.`;
+    const errorMessage = `Failed to load data: ${error.message}\n\n` +
+      'Please try the following:\n' +
+      '1. Check your internet connection\n' +
+      '2. Clear your browser cache\n' +
+      '3. Refresh the page\n\n' +
+      'If the problem persists, please contact the administrator with this error code: ' +
+      new Date().toISOString();
+    
     alert(errorMessage);
   } finally {
     hideLoading();
