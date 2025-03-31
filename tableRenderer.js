@@ -189,15 +189,9 @@ function renderTableRows(sortedData, totalRow, sortedColumnIndex, sortDirection,
 
               // Update the timestamp display
               const lastUpdatedDiv = document.getElementById('lastUpdated');
-              const timestamp = new Date().toLocaleString('en-US', {
-                month: '2-digit',
-                day: '2-digit',
-                year: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-              });
-              lastUpdatedDiv.textContent = `Last updated: ${timestamp}`;
+              const date = new Date();
+              const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear().toString().slice(-2)}`;
+              lastUpdatedDiv.textContent = `Last updated: ${formattedDate}`;
 
               // Reset input
               input.value = '0';
