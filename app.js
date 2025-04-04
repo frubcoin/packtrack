@@ -33,6 +33,18 @@ async function init() {
     setupExportButton();
     setupPinLock();
     updateCostCalculator();
+    
+    // Update last updated timestamp after refresh
+    const lastUpdatedDiv = document.getElementById('lastUpdated');
+    const timestamp = new Date().toLocaleString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+    lastUpdatedDiv.textContent = `Last updated: ${timestamp}`;
   } catch (error) {
     console.error('Initialization error:', error);
     alert('Failed to load data. Please try again later.');
@@ -125,8 +137,8 @@ function showConfetti(originElement) {
 }
 
 function updateCostCalculator() {
-  if (tableData && tableData.length > 0) {
-    const totalPacks = tableData[tableData.length - 1].packCount;
+  if (tableData && tableData.data && tableData.data.length > 0) {
+    const totalPacks = tableData.data[tableData.data.length - 1].packCount;
     const estimatedCost = totalPacks * 4.5;
     const costDisplay = document.getElementById('estimatedCost');
     costDisplay.textContent = `$${estimatedCost.toFixed(2)}`; // Format as currency
