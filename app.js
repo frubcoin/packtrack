@@ -25,6 +25,7 @@ async function init() {
   try {
     showLoading();
     const response = await fetchData();
+    console.log('Initial data response:', response); // Debug log
     tableData = response; // Store the full response object
     setTableDataForSorting(response.data);
     renderTable(response, actionsUnlocked);
@@ -50,12 +51,13 @@ function setupPinLock() {
     const enteredPin = pinInput.value;
     if (enteredPin === '6660') {
       actionsUnlocked = true;
-      if (tableData) {
+      console.log('Current tableData:', tableData); // Debug log
+      if (tableData && tableData.data) {
         renderTable(tableData, actionsUnlocked);
         pinContainer.classList.add('hidden');
         actionsHeader.classList.remove('hidden-column');
       } else {
-        console.error('No table data available');
+        console.error('Invalid table data structure:', tableData);
         alert('Failed to unlock. Please refresh the page and try again.');
       }
     } else {

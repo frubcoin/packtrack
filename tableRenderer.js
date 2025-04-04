@@ -6,12 +6,29 @@ let currentSortDirection = 'desc'; // Track sort direction
 let tableHeaders; // Declare tableHeaders here to be accessible in the module scope
 
 export function renderTable(data, actionsUnlocked) {
+  console.log('renderTable called with:', { data, actionsUnlocked }); // Debug log
+  
   const tableBody = document.getElementById('tableBody');
   tableHeaders = document.querySelectorAll('#dataTable thead th');
   const actionsHeader = document.getElementById('actionsHeader');
 
-  if (!data || !data.data || !Array.isArray(data.data)) {
-    console.error('Invalid data structure:', data);
+  if (!data) {
+    console.error('No data provided to renderTable');
+    return;
+  }
+
+  if (!data.data) {
+    console.error('Data structure missing .data property:', data);
+    return;
+  }
+
+  if (!Array.isArray(data.data)) {
+    console.error('data.data is not an array:', data.data);
+    return;
+  }
+
+  if (data.data.length === 0) {
+    console.error('data.data array is empty');
     return;
   }
 
