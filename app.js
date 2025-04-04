@@ -51,12 +51,17 @@ function setupPinLock() {
     const enteredPin = pinInput.value;
     if (enteredPin === '6660') {
       actionsUnlocked = true;
-      renderTable(tableData, actionsUnlocked); // Re-render table with actions unlocked and existing data
-      pinContainer.classList.add('hidden'); // Hide pin input
-      actionsHeader.classList.remove('hidden-column'); // Show actions header
-      // Show actions column cells (handled in renderTableRows)
+      // Ensure we have valid data before re-rendering
+      if (tableData) {
+        renderTable({ data: tableData }, actionsUnlocked);
+        pinContainer.classList.add('hidden');
+        actionsHeader.classList.remove('hidden-column');
+      } else {
+        console.error('No table data available');
+        alert('Failed to unlock. Please refresh the page and try again.');
+      }
     } else {
-      alert('Incorrect PIN. Please try again.'); // Basic error feedback
+      alert('Incorrect PIN. Please try again.');
     }
   });
 }
