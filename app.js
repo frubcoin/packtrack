@@ -25,16 +25,15 @@ async function init() {
   try {
     showLoading();
     const response = await fetchData();
-    tableData = response.data; // Store the array portion
+    tableData = response; // Store the full response object
     setTableDataForSorting(response.data);
-    renderTable(response, actionsUnlocked); // Pass the full response object
+    renderTable(response, actionsUnlocked);
     setupThemeToggle();
     setupExportButton();
-    setupPinLock(); // Setup pin lock functionality
-    updateCostCalculator(); // Calculate and display initial cost
+    setupPinLock();
+    updateCostCalculator();
   } catch (error) {
     console.error('Initialization error:', error);
-    // Optionally show an error message to the user
     alert('Failed to load data. Please try again later.');
   } finally {
     hideLoading();
@@ -51,9 +50,8 @@ function setupPinLock() {
     const enteredPin = pinInput.value;
     if (enteredPin === '6660') {
       actionsUnlocked = true;
-      // Ensure we have valid data before re-rendering
       if (tableData) {
-        renderTable({ data: tableData }, actionsUnlocked);
+        renderTable(tableData, actionsUnlocked);
         pinContainer.classList.add('hidden');
         actionsHeader.classList.remove('hidden-column');
       } else {

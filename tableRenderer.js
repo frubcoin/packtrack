@@ -7,24 +7,25 @@ let tableHeaders; // Declare tableHeaders here to be accessible in the module sc
 
 export function renderTable(data, actionsUnlocked) {
   const tableBody = document.getElementById('tableBody');
-  tableHeaders = document.querySelectorAll('#dataTable thead th'); // Initialize tableHeaders here
+  tableHeaders = document.querySelectorAll('#dataTable thead th');
   const actionsHeader = document.getElementById('actionsHeader');
 
-  if (!data) {
-    return; // Data might be null during re-render after unlocking actions
+  if (!data || !data.data || !Array.isArray(data.data)) {
+    console.error('Invalid data structure:', data);
+    return;
   }
 
-  // Separate the total row - update to access data.data
+  // Separate the total row
   const sortedData = [...data.data.slice(0, -1)];
   const totalRow = data.data[data.data.length - 1];
 
   // Default sorting by pack count (descending)
   if (currentSortColumn === null) {
     sortedData.sort((a, b) => b.packCount - a.packCount);
-    currentSortColumn = 1; // Default sort by Pack Count column (index 1)
+    currentSortColumn = 1;
     currentSortDirection = 'desc';
   } else {
-    sortData(sortedData, currentSortColumn, currentSortDirection); // Apply previous sort
+    sortData(sortedData, currentSortColumn, currentSortDirection);
   }
 
   // Set visibility of Actions header based on actionsUnlocked
@@ -35,7 +36,7 @@ export function renderTable(data, actionsUnlocked) {
   }
 
   // Initial render
-  renderTableRows(sortedData, totalRow, currentSortColumn, currentSortDirection, actionsUnlocked); // Pass actionsUnlocked
+  renderTableRows(sortedData, totalRow, currentSortColumn, currentSortDirection, actionsUnlocked);
 }
 
 // Attach sorting functionality to headers - done only once during module initialization
