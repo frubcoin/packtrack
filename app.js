@@ -25,16 +25,28 @@ async function init() {
   try {
     showLoading();
     const response = await fetchData();
-    tableData = response.data; // Store the array portion
+    console.log('Initial data response:', response); // Debug log
+    tableData = response; // Store the full response object
     setTableDataForSorting(response.data);
-    renderTable(response, actionsUnlocked); // Pass the full response object
+    renderTable(response, actionsUnlocked);
     setupThemeToggle();
     setupExportButton();
-    setupPinLock(); // Setup pin lock functionality
-    updateCostCalculator(); // Calculate and display initial cost
+    setupPinLock();
+    updateCostCalculator();
+    
+    // Update last updated timestamp after refresh
+    const lastUpdatedDiv = document.getElementById('lastUpdated');
+    const timestamp = new Date().toLocaleString('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+    lastUpdatedDiv.textContent = `Last updated: ${timestamp}`;
   } catch (error) {
     console.error('Initialization error:', error);
-    // Optionally show an error message to the user
     alert('Failed to load data. Please try again later.');
   } finally {
     hideLoading();
@@ -51,12 +63,17 @@ function setupPinLock() {
     const enteredPin = pinInput.value;
     if (enteredPin === '6660') {
       actionsUnlocked = true;
-      renderTable(tableData, actionsUnlocked); // Re-render table with actions unlocked and existing data
-      pinContainer.classList.add('hidden'); // Hide pin input
-      actionsHeader.classList.remove('hidden-column'); // Show actions header
-      // Show actions column cells (handled in renderTableRows)
+      console.log('Current tableData:', tableData); // Debug log
+      if (tableData && tableData.data) {
+        renderTable(tableData, actionsUnlocked);
+        pinContainer.classList.add('hidden');
+        actionsHeader.classList.remove('hidden-column');
+      } else {
+        console.error('Invalid table data structure:', tableData);
+        alert('Failed to unlock. Please refresh the page and try again.');
+      }
     } else {
-      alert('Incorrect PIN. Please try again.'); // Basic error feedback
+      alert('Incorrect PIN. Please try again.');
     }
   });
 }
@@ -120,8 +137,8 @@ function showConfetti(originElement) {
 }
 
 function updateCostCalculator() {
-  if (tableData && tableData.length > 0) {
-    const totalPacks = tableData[tableData.length - 1].packCount;
+  if (tableData && tableData.data && tableData.data.length > 0) {
+    const totalPacks = tableData.data[tableData.data.length - 1].packCount;
     const estimatedCost = totalPacks * 4.5;
     const costDisplay = document.getElementById('estimatedCost');
     costDisplay.textContent = `$${estimatedCost.toFixed(2)}`; // Format as currency
