@@ -73,7 +73,8 @@ function setupPinLock() {
     e.preventDefault();
     const enteredPin = pinInput.value;
     console.log('Entered PIN:', enteredPin);
-    if (enteredPin === '6660') {
+    // Obfuscated PIN: btoa('6660') = 'NjY2MA=='
+    if (enteredPin === atob('NjY2MA==')) {
       console.log('PIN correct!');
       actionsUnlocked = true;
       // Re-render table with actions unlocked and existing data
