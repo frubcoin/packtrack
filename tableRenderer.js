@@ -125,10 +125,10 @@ function renderTableRows(sortedData, totalRow, sortedColumnIndex, sortDirection,
           >
           <span class="inline-flex items-center relative">
             <button
-              class="add-btn bg-blue-700 dark:bg-blue-800 text-white px-2 py-1 rounded w-20 text-center relative flex justify-center items-center space-x-1"
+              class="add-btn bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded w-20 text-center relative flex justify-center items-center space-x-1"
               data-index="${row.index}"
             >
-              <span>Add</span>
+              <span>Submit</span>
             </button>
             <div class="checkmark-container relative w-[20px] h-[20px] inline-block">
               <svg class="checkmark hidden absolute top-0 left-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: white;">
@@ -160,7 +160,6 @@ function renderTableRows(sortedData, totalRow, sortedColumnIndex, sortDirection,
         const incrementValue = parseInt(input.value) || 0;
         if (incrementValue !== 0) {
           try {
-            showLoading();
             const newPackCount = row.packCount + incrementValue;
 
             // Prevent pack count from going negative
@@ -217,8 +216,6 @@ function renderTableRows(sortedData, totalRow, sortedColumnIndex, sortDirection,
           } catch (error) {
             console.error('Update failed:', error);
             alert('Failed to update pack count. Please try again.');
-          } finally {
-            hideLoading();
           }
         }
       });

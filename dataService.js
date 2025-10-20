@@ -2,8 +2,17 @@ const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRzhT3A
 
 export async function fetchData() {
   try {
+    console.log('Fetching data from:', SPREADSHEET_URL);
     const response = await fetch(SPREADSHEET_URL);
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const csvText = await response.text();
+    console.log('CSV data received:', csvText.substring(0, 200) + '...');
     return parseCSV(csvText);
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -18,7 +27,7 @@ export async function updateValue(index, value) {
     formData.append('index', index.toString());
     formData.append('value', value.toString());
 
-    const response = await fetch('https://script.google.com/macros/s/AKfycbzCoVTQrWmFgHBE2LiebXtHJK3NwW-wirbkduFlYqQf1-RrC_9KTWi8LqAi4iZuKNwzXA/exec', {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbwBZWwQe1Hxno0pswqQ7e_2LFH0-u4BLO_TzQHM1h5smnrMac_DtZ0fmu-rr9p4SAg3IA/exec', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-cache',
@@ -42,6 +51,38 @@ export async function updateValue(index, value) {
     }
   } catch (error) {
     console.error('Error updating value:', error);
+    throw error;
+  }
+}
+
+export async function addNewSet(setName) {
+  try {
+    console.log('Preparing to add set:', setName);
+    const formData = new URLSearchParams();
+    formData.append('action', 'addSet');
+    formData.append('setName', setName);
+
+    console.log('Form data:', formData.toString());
+    console.log('Sending request to Apps Script...');
+
+    const response = await fetch('https://script.google.com/macros/s/AKfycbwBZWwQe1Hxno0pswqQ7e_2LFH0-u4BLO_TzQHM1h5smnrMac_DtZ0fmu-rr9p4SAg3IA/exec', {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData
+    });
+
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+
+    const result = await response.json();
+    console.log('Apps Script response:', result);
+    return result;
+  } catch (error) {
+    console.error('Error adding new set:', error);
     throw error;
   }
 }

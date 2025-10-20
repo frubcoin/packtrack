@@ -1,4 +1,4 @@
-import { fetchData } from './dataService.js';
+import { fetchData, addNewSet } from './dataService.js';
 import { renderTable, setTableDataForSorting } from './tableRenderer.js';
 import { setupThemeToggle } from './themeToggle.js';
 
@@ -23,8 +23,10 @@ function hideLoading() {
 
 async function init() {
   try {
+    console.log('Starting initialization...');
     showLoading();
     const response = await fetchData();
+    console.log('Data fetched:', response);
     tableData = response.data; // Store the array portion
     setTableDataForSorting(response.data);
     renderTable(response, actionsUnlocked); // Pass the full response object
@@ -32,10 +34,21 @@ async function init() {
     setupExportButton();
     setupPinLock(); // Setup pin lock functionality
     updateCostCalculator(); // Calculate and display initial cost
+    
+    // Setup add set after DOM is ready
+    setTimeout(() => {
+      try {
+        setupAddSet();
+      } catch (error) {
+        console.error('Error setting up add set:', error);
+      }
+    }, 100);
+    
+    console.log('Initialization complete');
   } catch (error) {
     console.error('Initialization error:', error);
-    // Optionally show an error message to the user
-    alert('Failed to load data. Please try again later.');
+    // Show error message with more details
+    alert('Failed to load data. Please check:\n1. Google Sheets URL is correct\n2. Sheet is published to web\n3. Internet connection is working\n\nError: ' + error.message);
   } finally {
     hideLoading();
   }
@@ -47,15 +60,34 @@ function setupPinLock() {
   const pinContainer = document.getElementById('pinContainer');
   const actionsHeader = document.getElementById('actionsHeader');
 
-  submitPinButton.addEventListener('click', async () => {
+  console.log('Pin button found:', submitPinButton);
+  console.log('Pin input found:', pinInput);
+
+  if (!submitPinButton) {
+    console.error('Submit pin button not found!');
+    return;
+  }
+
+  submitPinButton.addEventListener('click', async (e) => {
+    console.log('Pin button clicked!');
+    e.preventDefault();
     const enteredPin = pinInput.value;
+    console.log('Entered PIN:', enteredPin);
     if (enteredPin === '6660') {
+      console.log('PIN correct!');
       actionsUnlocked = true;
-      renderTable(tableData, actionsUnlocked); // Re-render table with actions unlocked and existing data
+      // Re-render table with actions unlocked and existing data
+      const response = { data: tableData };
+      renderTable(response, actionsUnlocked);
       pinContainer.classList.add('hidden'); // Hide pin input
       actionsHeader.classList.remove('hidden-column'); // Show actions header
+      document.getElementById('addSetContainer').classList.remove('hidden'); // Show add set input
       // Show actions column cells (handled in renderTableRows)
+      
+      // Show confetti on successful PIN entry using default falling style
+      showConfetti(submitPinButton, e);
     } else {
+      console.log('PIN incorrect');
       alert('Incorrect PIN. Please try again.'); // Basic error feedback
     }
   });
@@ -65,6 +97,74 @@ function setupExportButton() {
   const exportButton = document.getElementById('exportImage');
   exportButton.addEventListener('click', () => {
     exportTableAsImage();
+  });
+}
+
+function setupAddSet() {
+  const addSetButton = document.getElementById('addSetButton');
+  const newSetNameInput = document.getElementById('newSetName');
+
+  if (!addSetButton || !newSetNameInput) {
+    console.error('Add set elements not found');
+    return;
+  }
+
+  addSetButton.addEventListener('click', async () => {
+    const setName = newSetNameInput.value.trim();
+    if (!setName) {
+      alert('Please enter a set name');
+      return;
+    }
+
+    try {
+      console.log('Adding new set:', setName);
+      const result = await addNewSet(setName);
+      console.log('Add set result:', result);
+      
+      if (result.result === 'success') {
+        console.log('Set added successfully, will refresh data in 10 seconds...');
+        
+        // Clear the input
+        newSetNameInput.value = '';
+        
+        // Show success message
+        // Removed popup notification per request
+        
+        // Show confetti using default falling style
+        showConfetti(addSetButton);
+        
+        // Wait 5 seconds then refresh the data
+        setTimeout(async () => {
+          try {
+            console.log('Refreshing data after 5 second delay...');
+            const response = await fetchData();
+            tableData = response.data;
+            setTableDataForSorting(response.data);
+            renderTable(response, actionsUnlocked);
+            updateCostCalculator();
+            console.log('Data refreshed successfully');
+          } catch (error) {
+            console.error('Error refreshing data:', error);
+            alert('Set was added but failed to refresh data. Please refresh the page manually.');
+          }
+        }, 5000);
+      } else {
+        console.error('Failed to add set:', result);
+        console.error('Full error object:', JSON.stringify(result, null, 2));
+        const errorMsg = result.error ? JSON.stringify(result.error) : result.message || JSON.stringify(result);
+        alert('Failed to add set: ' + errorMsg);
+      }
+    } catch (error) {
+      console.error('Error adding set:', error);
+      alert('Failed to add set. Please try again. Error: ' + error.message);
+    }
+  });
+
+  // Allow Enter key to submit
+  newSetNameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      addSetButton.click();
+    }
   });
 }
 
@@ -103,18 +203,33 @@ const defaults = {
   startVelocity: -35
 };
 
-function showConfetti(originElement) {
-  const rect = originElement.getBoundingClientRect();
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
+function showConfetti(originElement, clickEvent = null) {
+  let centerX, centerY;
+  
+  if (clickEvent && clickEvent.clientX !== undefined) {
+    // Use actual click coordinates
+    centerX = clickEvent.clientX;
+    centerY = clickEvent.clientY;
+  } else {
+    // Fallback to element center
+    const rect = originElement.getBoundingClientRect();
+    centerX = rect.left + rect.width / 2;
+    centerY = rect.top + rect.height / 2;
+  }
+
+  // Normalize to viewport to avoid horizontal offset issues
+  const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+  const viewportHeight = document.documentElement.clientHeight || window.innerHeight;
+  const originX = Math.min(Math.max(centerX / viewportWidth, 0), 1);
+  const originY = Math.min(Math.max(centerY / viewportHeight, 0), 1);
 
   confetti({
     ...defaults,
     shapes: [pokeball],
     colors: ['#EE1515', '#F0F0F0'],
     origin: {
-      x: centerX / window.innerWidth,
-      y: centerY / window.innerHeight,
+      x: originX,
+      y: originY,
     },
   });
 }
