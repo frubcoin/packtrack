@@ -236,11 +236,29 @@ function showConfetti(originElement, clickEvent = null) {
 }
 
 function updateCostCalculator() {
-  if (tableData && tableData.length > 0) {
-    const totalPacks = tableData[tableData.length - 1].packCount;
+  if (tableData && tableData.length > 1) { // Need at least one set (plus the total row)
+    // Sum all pack counts except the last row (which is the total row)
+    const totalPacks = tableData.slice(0, -1).reduce((sum, row) => {
+      return sum + (parseInt(row.packCount) || 0);
+    }, 0);
+    
+    // Update the total row in the data
+    if (tableData.length > 0) {
+      tableData[tableData.length - 1].packCount = totalPacks;
+    }
+    
+    // Update the displayed total in the UI if the table is rendered
+    const totalPackCell = document.querySelector('#tableBody tr:last-child td:nth-child(2)');
+    if (totalPackCell) {
+      totalPackCell.textContent = totalPacks;
+    }
+    
+    // Update the cost display
     const estimatedCost = totalPacks * 4.5;
     const costDisplay = document.getElementById('estimatedCost');
-    costDisplay.textContent = `$${estimatedCost.toFixed(2)}`; // Format as currency
+    if (costDisplay) {
+      costDisplay.textContent = `$${estimatedCost.toFixed(2)}`; // Format as currency
+    }
   }
 }
 
